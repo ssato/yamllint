@@ -12,8 +12,7 @@ env:
   - REMOVE_LOCALES=false
   - REMOVE_LOCALES=true
 install:
-  - pip install pyyaml coveralls flake8 flake8-import-order doc8
-  - if [[ $TRAVIS_PYTHON_VERSION != 2* ]]; then pip install sphinx; fi
+  - pip install -r requirements.txt -r tests/requirements.txt
   - pip install .
   - if [[ $REMOVE_LOCALES = "true" ]]; then sudo rm -rf /usr/lib/locale/*; fi
 script:
