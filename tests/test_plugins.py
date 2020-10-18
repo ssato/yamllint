@@ -22,6 +22,10 @@ try:
 except ImportError:  # for Python 2.7
     mock = False
 
+from tests.common import RuleTestCase
+from tests.test_spec_examples import (
+    conf_general, conf_overrides, gen_spec_test_cases
+)
 from tests.yamllint_plugin_example import rules as example
 
 import yamllint.plugins
@@ -122,3 +126,27 @@ class RulesTestCase(unittest.TestCase):
         with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
             with self.assertRaises(ValueError):
                 yamllint.rules.get('DOESNT_EXIST')
+
+
+@unittest.skipIf(not mock, "unittest.mock is not available")
+class SpecificationTestCase(RuleTestCase):
+    rule_id = None
+
+
+def _gen_test(buffer, conf):
+    def test(self):
+        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
+            self.check(buffer, conf)
+    return test
+
+
+def gen_plugin_spec_test_cases():
+    conf_plugin_general = ('forbid-comments:\n'
+                           '  forbid: false\n'
+                           'random-failure: disable\n'
+                           'no-forty-two: disable\n')
+    gen_spec_test_cases(conf_general + conf_plugin_general, conf_overrides,
+                        cls=SpecificationTestCase, _gen_test=_gen_test)
+
+
+gen_plugin_spec_test_cases()

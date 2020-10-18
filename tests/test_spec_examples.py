@@ -180,11 +180,18 @@ pyyaml_blacklist = (
     'example-9.5',
 )
 
-for file in files:
-    if file in pyyaml_blacklist:
-        continue
 
-    with open('tests/yaml-1.2-spec-examples/' + file, encoding='utf-8') as f:
-        conf = conf_general + conf_overrides.get(file, '')
-        setattr(SpecificationTestCase, 'test_' + file,
-                _gen_test(f.read(), conf))
+def gen_spec_test_cases(conf_general, conf_overrides,
+                        cls=SpecificationTestCase,
+                        _gen_test=_gen_test):
+    for file in files:
+        if file in pyyaml_blacklist:
+            continue
+
+        with open('tests/yaml-1.2-spec-examples/' + file,
+                  encoding='utf-8') as f:
+            conf = conf_general + conf_overrides.get(file, '')
+            setattr(cls, 'test_' + file, _gen_test(f.read(), conf))
+
+
+gen_spec_test_cases(conf_general, conf_overrides)
