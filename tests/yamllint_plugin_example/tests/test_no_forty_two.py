@@ -18,9 +18,7 @@ from __future__ import absolute_import
 
 import unittest
 
-from .plugins_common import (
-    PluginTestCase, mock
-)
+from .plugins_common import PluginTestCase, mock
 
 
 @unittest.skipIf(not mock, 'unittest.mock is not available')
