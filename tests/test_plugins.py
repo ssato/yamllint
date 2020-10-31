@@ -32,9 +32,6 @@ import yamllint.plugins
 import yamllint.rules
 
 
-PLUGIN_RULES = dict(example.RULES)
-
-
 class FakeEntryPoint(object):
     """Fake object to mimic pkg_resources.EntryPoint.
     """
@@ -110,7 +107,7 @@ class RulesTestCase(unittest.TestCase):
             yamllint.rules.get('DOESNT_EXIST')
 
     def test_get_default_rule_with_plugins(self):
-        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
+        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, example.RULES):
             self.assertEqual(yamllint.rules.get(yamllint.rules.braces.ID),
                              yamllint.rules.braces)
 
@@ -118,12 +115,12 @@ class RulesTestCase(unittest.TestCase):
         plugin_rule_id = example.forbid_comments.ID
         plugin_rule_mod = example.forbid_comments
 
-        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
+        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, example.RULES):
             self.assertEqual(yamllint.rules.get(plugin_rule_id),
                              plugin_rule_mod)
 
     def test_get_rule_does_not_exist_with_plugins(self):
-        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
+        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, example.RULES):
             with self.assertRaises(ValueError):
                 yamllint.rules.get('DOESNT_EXIST')
 
@@ -135,7 +132,7 @@ class SpecificationTestCase(RuleTestCase):
 
 def _gen_test(buffer, conf):
     def test(self):
-        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
+        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, example.RULES):
             self.check(buffer, conf)
     return test
 

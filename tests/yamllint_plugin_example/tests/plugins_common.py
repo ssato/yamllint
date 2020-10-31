@@ -30,10 +30,7 @@ except (ImportError, ValueError):
     from rules import RULES
 
 
-PLUGIN_RULES = dict(RULES)
-
-
 class PluginTestCase(RuleTestCase):
     def check(self, source, conf, **kwargs):
-        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
+        with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, RULES):
             super(PluginTestCase, self).check(source, conf, **kwargs)
