@@ -34,11 +34,6 @@ PLUGIN_RULES = dict(RULES)
 
 
 class PluginTestCase(RuleTestCase):
-    rule_id = None
-
     def check(self, source, conf, **kwargs):
-        if not self.rule_id:
-            return
-
         with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, PLUGIN_RULES):
             super(PluginTestCase, self).check(source, conf, **kwargs)
