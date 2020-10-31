@@ -22,7 +22,11 @@ except ImportError:  # for Python 2.7
     mock = False
 
 import yamllint.rules
-from .common import RuleTestCase
+
+try:
+    from ...common import RuleTestCase
+except ImportError:
+    from .common import RuleTestCase
 
 try:
     from ..rules import RULES
