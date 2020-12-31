@@ -23,9 +23,6 @@ except ImportError:  # for Python 2.7
     mock = False
 
 from tests.common import RuleTestCase
-from tests.test_spec_examples import (
-    conf_general, conf_overrides, gen_spec_test_cases
-)
 from tests.yamllint_plugin_example import rules as example
 
 import yamllint.plugins
@@ -126,24 +123,44 @@ class RulesTestCase(unittest.TestCase):
 
 
 @unittest.skipIf(not mock, "unittest.mock is not available")
-class SpecificationTestCase(RuleTestCase):
-    rule_id = None
-
-
-def _gen_test(buffer, conf):
-    def test(self):
+class PluginTestCase(RuleTestCase):
+    def check(self, source, conf, **kwargs):
         with mock.patch.dict(yamllint.rules._EXTERNAL_RULES, example.RULES):
-            self.check(buffer, conf)
-    return test
+            super(PluginTestCase, self).check(source, conf, **kwargs)
 
 
-def gen_plugin_spec_test_cases():
-    conf_plugin_general = ('forbid-comments:\n'
-                           '  forbid: false\n'
-                           'random-failure: disable\n'
-                           'no-forty-two: disable\n')
-    gen_spec_test_cases(conf_general + conf_plugin_general, conf_overrides,
-                        cls=SpecificationTestCase, _gen_test=_gen_test)
+@unittest.skipIf(not mock, 'unittest.mock is not available')
+class ForbidCommentPluginTestCase(PluginTestCase):
+    rule_id = 'forbid-comments'
+
+    def test_plugin_disabled(self):
+        conf = 'forbid-comments: disable\n'
+        self.check('---\n'
+                   '# comment\n', conf)
+
+    def test_disabled(self):
+        conf = ('forbid-comments:\n'
+                '  forbid: false\n')
+        self.check('---\n'
+                   '# comment\n', conf)
+
+    def test_enabled(self):
+        conf = ('forbid-comments:\n'
+                '  forbid: true\n')
+        self.check('---\n'
+                   '# comment\n', conf, problem=(2, 1))
 
 
-gen_plugin_spec_test_cases()
+@unittest.skipIf(not mock, 'unittest.mock is not available')
+class NoFortyTwoPluginTestCase(PluginTestCase):
+    rule_id = 'no-forty-two'
+
+    def test_disabled(self):
+        conf = 'no-forty-two: disable'
+        self.check('---\n'
+                   'a: 42\n', conf)
+
+    def test_enabled(self):
+        conf = 'no-forty-two: enable'
+        self.check('---\n'
+                   'a: 42\n', conf, problem=(2, 4))
